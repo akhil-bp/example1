@@ -50,23 +50,23 @@ router.post('/login', async function (req, res, next) {
       if(rs){
         var token = jwt.sign({ name: user.name,id: user._id,role: user.role }, config.secret);// secret : "hgh"
         console.log(token);
-        res.cookie('token', token, { signed: true });//'token'-> token name
-        res.redirect('/users');//app.use(cookieParser(config.cookieSecret));...<---to app.js
-        res.locals.success = true;
+        // res.cookie('token', token, { signed: true });//'token'-> token name
+        res.json({status:"successfully logged",token:token});
+        // res.locals.success = true;
       } else {
-        res.render('index');
-        res.locals.success = false;
+        res.json({status:"error in password"});
+        // res.locals.success = false;
         //res.send('password incorrect');
       }
       
     }
     else {
       //res.send('incorrect user email or password');
-      res.render('index');
-      res.locals.success = false;
+      res.json({status:"invalid email address"});
+      // res.locals.success = false;
     }
   } catch (e) {
-    res.render('index');
+    res.json({status:"error in  email or password"});
   }
 
 });
@@ -117,13 +117,14 @@ router.get('/userform', function (req, res, next) {
 //then catch ->>>> async await
 router.post('/userform', validateSchema({ schemaName: 'new-user1', view: 'userform' }), async function (req, res) {
   //res.render('contactus');
-
+  
 
   try {
     //User.findOne({ email: req.body.temail }, async function (err, users) {
     var chk = await userService.getUser({ email: req.body.temail })
+    //console.log(req.body.temail)
     if (chk) {
-      res.send('mail already exist!');
+      res.json({status:"error",response:'mail already exist!'});
     } else {
       req.body.tpassword = req.body.tpassword.trim();//delete space before and after
       req.body.tconfpassword = req.body.tconfpassword.trim();
@@ -143,9 +144,9 @@ router.post('/userform', validateSchema({ schemaName: 'new-user1', view: 'userfo
         //console.log(usr);
         var temp = await userService.createUser(usr)//createUser required from userService.....see require('') top
         res.locals.success = true;
-        res.render('userform');
+        res.json({status:"success", msg:'data inserted successfuly!'});
       } else {
-        res.send('password not matching!');
+        res.json({status:"error2", msg:'password not matching!'});
       }
     }
   }
