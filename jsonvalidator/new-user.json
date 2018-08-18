@@ -13,11 +13,6 @@
         "description": "email of the account user",
         "format": "email"
       },
-      "tdate": {
-        "type": "string",
-        "description": "date of birth of account",
-        "format": "date"
-      },
       "tpassword": {
         "type": "string",
         "description": "password of account"
@@ -27,5 +22,5 @@
         "description": "password of account"
       }
     },
-    "required": ["tname", "temail", "tdate","tpassword","tconfpassword"]
+    "required": ["tname", "temail","tpassword","tconfpassword"]
   }

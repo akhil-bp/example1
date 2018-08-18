@@ -7,6 +7,7 @@ var debug = require('debug')('example1:app');//?????
 var config = require('./config');
 var config = require('./config');
 var jwt = require('express-jwt');
+var cors = require('cors');
 
 
 var mongoose = require('mongoose');
@@ -30,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.locals.baseUrl = config.baseUrl;
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

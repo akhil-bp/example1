@@ -32,7 +32,9 @@ module.exports = (params) => {
     let valid = ajv.validate(params.schemaName, req.body)
     if (!valid) {
     //   return res.send(errorResponse(ajv.errors))
-        return res.render(params.view, errorResponse(ajv.errors))
+      return res.json({'status': 'Error', error: errorResponse(ajv.errors)})
+        //return res.render(params.view, errorResponse(ajv.errors))
+        
     }
     next()
   }
