@@ -7,6 +7,9 @@ var validateSchema = require('../jsonvalidator/valid');//for validation
 var bcrypt = require('bcrypt');//encrypt
 var jwt = require('jsonwebtoken');
 var config = require('../config');
+const app = express();
+const multer = require('multer');
+const bodyParser = require('body-parser')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -44,6 +47,8 @@ router.post('/login', async function (req, res, next) {
     var user = await userService.getUser({ email: mail });
     if(user){
       var dbpswd = user.password;
+      var pic = user.profilePicFile;
+      
       //console.log(dbpswd);
       var rs = await bcrypt.compare(myPlaintextPassword, dbpswd);
       //console.log(rs);
@@ -51,7 +56,8 @@ router.post('/login', async function (req, res, next) {
         var token = jwt.sign({ name: user.name,id: user._id,role: user.role }, config.secret);// secret : "hgh"
         console.log(token);
         // res.cookie('token', token, { signed: true });//'token'-> token name
-        res.json({status:"successfully logged",token:token});
+        res.json({status:"successfully logged",token:token,Pic:pic});
+        
         // res.locals.success = true;
       } else {
         res.json({status:"error in password"});
@@ -166,5 +172,121 @@ router.post('/userform', validateSchema({ schemaName: 'new-user1', view: 'userfo
 //res.locals.title =  'userform';
 //res.locals.success =  true;
 
+router.get('/usertable', async function (req, res) {
+  //res.render('contactus');
+  
+
+  try {
+    //User.findOne({ email: req.body.temail }, async function (err, users) {
+    var result = await userService.getUsers();
+    //console.log();
+    
+      res.json({response:result});
+    
+  }
+
+  catch (e) {
+    console.log(e);
+  }
+});
+
+router.post('/delete', async function (req, res, next) {
+  try {
+    var o_id = req.body.id;
+    var result = await userService.deleteUser({ _id: o_id });
+
+  } catch (e) {
+
+  }
+});
+router.get('/edit/:id', async function (req, res, next) {
+  try {
+    var o_id = req.params.id;
+    var user = await userService.getUser({ _id: o_id });
+    res.json({status:"success", user: user })
+  } catch (e) {
+    res.json({status:'error'})
+  }
+});
+
+
+
+
+ 
+
+
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: true}));
+ 
+// app.use(function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
+//   res.setHeader('Access-Control-Allow-Methods', 'POST');
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
+ 
+// app.get('/api', function (req, res) {
+//   res.end('file catcher example');
+// });
+var storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './public/uploads');
+  },
+  filename: function (req, file, callback) {
+    var filename = file.originalname.split(" ").join("_");
+    var newname= Date.now() + '-' + filename;
+    console.log(file,"thhi is new file");
+    callback(null, newname);
+    
+  }
+});
+
+var upload = multer({ storage: storage });
+router.post('/api/upload',upload.single('photo'), function (req, res) {
+  console.log(req.file.filename,"image name got");
+    if (!req.file) {
+        console.log("No file received");
+        return res.send({
+          success: false
+        });
+    
+      } else {
+        console.log('file received');
+        
+        return res.json({
+          success: true,
+          fle:req.file
+        })
+      }
+});
+ 
+// const PORT = process.env.PORT || 3000;
+ 
+// app.listen(PORT, function () {
+//   console.log('Node.js server is running on port ' + PORT);
+// });
+router.post('/edit', async function (req, res, next) {
+  try {
+    var o_id = req.body.id;
+    // console.log(o_id,"got id");
+    var edituser = await userService.updateUser({ _id: o_id },
+      {
+        $set:
+        {
+          name: req.body.name.trim(),
+          email: req.body.email,  
+          role: req.body.role,        
+          status: req.body.status
+          
+        }
+      });
+    res.json({ success: true, user: 'success' });
+  } catch (e) {
+
+    res.json( { success: false })
+  }
+
+});
 module.exports = router;//see bin/www
 

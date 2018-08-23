@@ -35,6 +35,10 @@ module.exports.updateUser = function(query = {}, data = {}) {
 return User.update(query, data).exec();
 };
 
+module.exports.deleteUser = function(query = {} ){
+return User.deleteOne(query).exec();
+};
+
 module.exports.paginateUser = function(query = {}, options= {}) {
 	return User.paginate(query, options);
 };

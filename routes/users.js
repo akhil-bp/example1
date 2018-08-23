@@ -114,32 +114,7 @@ router.get('/edit/:id', async function (req, res, next) {
 });
 
 //for view in edit page....another type of then..catch function
-router.post('/edit/:id', async function (req, res, next) {
-  try {
-    var o_id = req.params.id;
-    var edituser = await userService.updateUser({ _id: o_id },
-      {
-        $set:
-        {
-          name: req.body.tname.trim(),
-          email: req.body.temail,
-          date: req.body.tdate.trim(),
-          status: req.body.tstatus,
-          role: req.body.trole
-        }
 
-      });
-
-    var user = await userService.getUser({ _id: o_id });
-    user.date = moment(user.date).format('YYYY-MM-DD');
-    //console.log(user);
-    res.render('editview', { success: true, user: user });
-  } catch (e) {
-
-    res.render('editview', { success: false })
-  }
-
-});
 
 
 
@@ -189,6 +164,8 @@ router.post('/ajax/delete', async function (req, res, next) {
 
   }
 });
+
+
 
 module.exports = router;
 

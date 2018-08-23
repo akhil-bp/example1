@@ -5,8 +5,8 @@ var userSchema = mongoose.Schema({
     name : { type: String, default: "" },
     email : { type: String, default: "" },
     date : { type: Date },
+    role : { type: Number, default: 0 },
     status : { type: Number, default: 1 },
-    role : { type: Number, default: 1 },
     profilePic: { type: String, default: ""},
     profilePicFile:{ type: String, default: ""},
     password:{ type: String, default: ""}
