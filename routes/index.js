@@ -9,7 +9,8 @@ var jwt = require('jsonwebtoken');
 var config = require('../config');
 const app = express();
 const multer = require('multer');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const fs = require('fs');//unlink or storage
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -264,6 +265,7 @@ router.post('/picupload', async function (req, res, next) {
   try {
     var o_id = req.body.id;
     var pic = req.body.picname;
+    var oldFileName = req.body.oldimage;
     console.log(pic,"got id");
     var edituser = await userService.updateUser({ _id: o_id },
       {
@@ -272,6 +274,9 @@ router.post('/picupload', async function (req, res, next) {
           profilePicFile: pic
           
         }
+      });
+      fs.unlink('./public/uploads/' + oldFileName, (err) => {
+        console.log(err);
       });
     res.json({ success: true, user: 'success' });
   } catch (e) {

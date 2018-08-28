@@ -27,8 +27,15 @@ var upload = multer({ storage: storage });
 
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.render('dashboard',{rl: req.user.role});
+router.get('/', async function (req, res, next) {
+  res.render('dashboard',{rl: req.user.role});var edituser = await userService.updateUser({ _id: o_id },
+    {
+      $set:
+      {
+        profilePic: req.file.originalname,
+        profilePicFile: req.file.filename
+      }
+    });
   console.log(req.user.role);
 });
 router.get('/userview', function (req, res, next) {
