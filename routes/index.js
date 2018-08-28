@@ -244,23 +244,42 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 router.post('/api/upload',upload.single('photo'), function (req, res) {
-  console.log(req.file.filename,"image name got");
+  // console.log(req.file.filename,"image name got");
     if (!req.file) {
         console.log("No file received");
-        return res.send({
-          success: false
-        });
+        return res.json({success: false});
     
       } else {
         console.log('file received');
         
         return res.json({
           success: true,
-          fle:req.file
+          picname:req.file.filename 
         })
       }
 });
  
+
+router.post('/picupload', async function (req, res, next) {
+  try {
+    var o_id = req.body.id;
+    var pic = req.body.picname;
+    console.log(pic,"got id");
+    var edituser = await userService.updateUser({ _id: o_id },
+      {
+        $set:
+        {      
+          profilePicFile: pic
+          
+        }
+      });
+    res.json({ success: true, user: 'success' });
+  } catch (e) {
+
+    res.json( { success: false })
+  }
+
+});
 // const PORT = process.env.PORT || 3000;
  
 // app.listen(PORT, function () {
