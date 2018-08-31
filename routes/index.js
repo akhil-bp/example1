@@ -265,7 +265,25 @@ router.post('/picupload', async function (req, res, next) {
   try {
     var o_id = req.body.id;
     var pic = req.body.picname;
-    var oldFileName = req.body.oldimage;
+    var size= req.body.size;
+    var re = /(?:\.([^.]+))?$/;
+    var ext = re.exec(pic)[1];
+    // console.log(ext,"akhil")
+    var arr = ["png", "jpg", "jpeg", "gif","PNG", "JPG", "JPEG", "GIF"];
+    if (arr.includes(ext) === false || (size > 1e+6)) {
+      res.json( { success: false,errextension:"err" })
+      // console.log("errorrrrrrrrrrrrrrrr");
+      var oldFileName = req.body.oldimage;
+      fs.unlink('./public/uploads/' + pic, (err) => {
+        console.log(err);
+      });//delete saved only file from first api
+    }
+    else{
+      var oldFileName = req.body.oldimage;
+      fs.unlink('./public/uploads/' + oldFileName, (err) => {
+        console.log(oldFileName,"old file name");
+        console.log(err,"kkkokokokokooo");
+      });
     console.log(pic,"got id");
     var edituser = await userService.updateUser({ _id: o_id },
       {
@@ -275,10 +293,10 @@ router.post('/picupload', async function (req, res, next) {
           
         }
       });
-      fs.unlink('./public/uploads/' + oldFileName, (err) => {
-        console.log(err);
-      });
-    res.json({ success: true, user: 'success' });
+      
+    res.json({ success: true, user: 'success',pic: pic });
+    }
+    
   } catch (e) {
 
     res.json( { success: false })
