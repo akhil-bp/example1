@@ -330,5 +330,29 @@ router.post('/edit', async function (req, res, next) {
   }
 
 });
+
+
+router.get('/search/:srch', async function(req,res,next){
+  try{ 
+    var srch = req.params.srch;
+    //console.log(srch)
+    var editres = await userService.getUsers({  $or: [ { name: {$regex:srch} }, { email: {$regex:srch} } ] })
+    res.json({status: 'Success', res:editres});
+  }
+  catch(e){
+    res.json({status: 'Error', res:'Unable to find Datas'});
+  }
+})
+
+router.get('/getusers', async function(req,res,next){
+  try{ 
+    var datas = await userService.getUsers();
+    res.json({datas: datas, res:'finded Datas'});
+  }
+  catch(e){
+    res.json({status: 'Error', res:'Unable to find Datas'});
+  }
+})
+
 module.exports = router;//see bin/www
 
